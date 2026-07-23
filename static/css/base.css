@@ -1,0 +1,12 @@
+/* Our own styles on top of Bootstrap */
+
+.balance-card {
+  background: linear-gradient(135deg, #1d3557, #457b9d);
+  color: white;
+  border-radius: 1rem;
+}
+
+.hero {
+  padding: 4rem 0;
+  text-align: center;
+}

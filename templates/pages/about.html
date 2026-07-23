@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}About — Gringotts Bank{% endblock title %}
+
+{% block content %}
+<h1>About Gringotts Bank</h1>
+<p class="lead">
+  Gringotts Bank is a learning project built with the Django web framework.
+</p>
+<p>
+  It demonstrates the core building blocks of every Django project:
+</p>
+<ul>
+  <li><strong>Models</strong> — accounts and transactions stored in SQLite</li>
+  <li><strong>Views</strong> — the logic for deposits, withdrawals, and transfers</li>
+  <li><strong>Templates</strong> — the pages you are looking at right now</li>
+  <li><strong>URL dispatcher</strong> — connecting web addresses to views</li>
+  <li><strong>Forms</strong> — validating user input safely</li>
+  <li><strong>Authentication</strong> — sign up, log in, log out</li>
+</ul>
+<p>⚠️ Please do not deposit real money. We checked — it does not work.</p>
+{% endblock content %}
