@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Transaction History — Gringotts Bank{% endblock title %}
+
+{% block content %}
+<h1>Transaction History</h1>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th class="text-end">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for transaction in transactions %}
+      <tr>
+        <td>{{ transaction.timestamp|date:'M d, Y H:i' }}</td>
+        <td>{{ transaction.get_transaction_type_display }}</td>
+        <td>{{ transaction.description }}</td>
+        <td class="text-end {% if transaction.is_credit %}text-success{% else %}text-danger{% endif %}">
+          {% if transaction.is_credit %}+{% else %}−{% endif %}${{ transaction.amount }}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">No transactions yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

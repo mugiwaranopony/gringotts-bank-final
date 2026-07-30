@@ -8,6 +8,15 @@
   <p class="lead">
     The safest place to keep your galleons... we mean, dollars.
   </p>
+  {% if user.is_authenticated %}
+    <a class="btn btn-primary btn-lg" href="{% url 'dashboard' %}">
+      Go to My Dashboard
+    </a>
+  {% else %}
+    <p>Open an account today and get a <strong>$1,000 welcome bonus!</strong></p>
+    <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Open an Account</a>
+    <a class="btn btn-outline-secondary btn-lg" href="{% url 'login' %}">Log In</a>
+  {% endif %}
 </div>
 
 <div class="row text-center">

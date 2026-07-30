@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — Gringotts Bank{% endblock title %}
+
+{% block content %}
+<h1>Hello, {{ user.username }}! 👋</h1>
+
+<div class="card balance-card my-4">
+  <div class="card-body text-center py-4">
+    <h5 class="card-title">Your Balance</h5>
+    <p class="display-3 mb-0">${{ account.balance }}</p>
+  </div>
+</div>
+
+<h2>Recent Transactions</h2>
+{% if recent_transactions %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th class="text-end">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transaction in recent_transactions %}
+        <tr>
+          <td>{{ transaction.timestamp|date:'M d, Y H:i' }}</td>
+          <td>{{ transaction.get_transaction_type_display }}</td>
+          <td>{{ transaction.description }}</td>
+          <td class="text-end {% if transaction.is_credit %}text-success{% else %}text-danger{% endif %}">
+            {% if transaction.is_credit %}+{% else %}−{% endif %}${{ transaction.amount }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'transaction_list' %}">See full history →</a>
+{% else %}
+  <p>No transactions yet.</p>
+{% endif %}
+{% endblock content %}
