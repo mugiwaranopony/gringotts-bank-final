@@ -22,14 +22,14 @@ class Account(models.Model):
 
 class Transaction(models.Model):
     DEPOSIT = "DEPOSIT"
-    WITHDROW = "WITHDRAW"
+    WITHDRAW = "WITHDRAW"
     TRANSFER_IN = "TRANSFER_IN"
     TRANSFER_OUT = "TRANSFER_OUT"
     BONUS = "BONUS"
 
     TRANSACTION_TYPES = [
         (DEPOSIT, "Deposit"),
-        (WITHDROW, "Withdraw"),
+        (WITHDRAW, "Withdraw"),
         (TRANSFER_IN, "Transfer in"),
         (TRANSFER_OUT, "Transfer out"),
         (BONUS, "Welcome bonus"),
