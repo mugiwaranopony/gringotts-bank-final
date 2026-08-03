@@ -12,6 +12,12 @@
   </div>
 </div>
 
+<div class="d-flex gap-2 mb-4">
+  <a class="btn btn-success" href="{% url 'deposit' %}">💰 Deposit</a>
+  <a class="btn btn-warning" href="{% url 'withdraw' %}">💸 Withdraw</a>
+  <a class="btn btn-primary" href="{% url 'transfer' %}">🤝 Transfer</a>
+</div>
+
 <h2>Recent Transactions</h2>
 {% if recent_transactions %}
   <table class="table table-striped">
