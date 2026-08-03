@@ -16,7 +16,15 @@
   <a class="btn btn-success" href="{% url 'deposit' %}">💰 Deposit</a>
   <a class="btn btn-warning" href="{% url 'withdraw' %}">💸 Withdraw</a>
   <a class="btn btn-primary" href="{% url 'transfer' %}">🤝 Transfer</a>
+  <a class="btn btn-outline-primary" href="{% url 'request_payment' %}">🙋 Request</a>
 </div>
+
+{% if pending_requests %}
+  <div class="alert alert-info">
+    You have {{ pending_requests }} payment request{{ pending_requests|pluralize }}
+    waiting. <a href="{% url 'payment_requests' %}">Take a look →</a>
+  </div>
+{% endif %}
 
 <h2>Recent Transactions</h2>
 {% if recent_transactions %}

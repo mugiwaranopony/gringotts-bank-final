@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Requests — Gringotts Bank{% endblock title %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>🙋 Payment Requests</h1>
+  <a class="btn btn-primary" href="{% url 'request_payment' %}">Request Money</a>
+</div>
+
+<h2 class="h4">Asked of you</h2>
+{% if incoming %}
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>From</th>
+        <th>What for</th>
+        <th class="text-end">Amount</th>
+        <th class="text-end">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for payment_request in incoming %}
+        <tr>
+          <td>{{ payment_request.created_at|date:'M d, Y H:i' }}</td>
+          <td>{{ payment_request.requester.owner.username }}</td>
+          <td>{{ payment_request.note }}</td>
+          <td class="text-end">${{ payment_request.amount }}</td>
+          <td class="text-end">
+            {% if payment_request.is_pending %}
+              <form method="post" class="d-inline"
+                    action="{% url 'resolve_payment_request' payment_request.pk 'accept' %}">
+                {% csrf_token %}
+                <button class="btn btn-success btn-sm" type="submit">Pay</button>
+              </form>
+              <form method="post" class="d-inline"
+                    action="{% url 'resolve_payment_request' payment_request.pk 'decline' %}">
+                {% csrf_token %}
+                <button class="btn btn-outline-secondary btn-sm" type="submit">
+                  Decline
+                </button>
+              </form>
+            {% else %}
+              {{ payment_request.get_status_display }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">Nobody has asked you for money.</p>
+{% endif %}
+
+<h2 class="h4 mt-5">Asked by you</h2>
+{% if outgoing %}
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>To</th>
+        <th>What for</th>
+        <th class="text-end">Amount</th>
+        <th class="text-end">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for payment_request in outgoing %}
+        <tr>
+          <td>{{ payment_request.created_at|date:'M d, Y H:i' }}</td>
+          <td>{{ payment_request.payer.owner.username }}</td>
+          <td>{{ payment_request.note }}</td>
+          <td class="text-end">${{ payment_request.amount }}</td>
+          <td class="text-end">
+            {% if payment_request.is_pending %}
+              <span class="text-muted me-2">Pending</span>
+              <form method="post" class="d-inline"
+                    action="{% url 'resolve_payment_request' payment_request.pk 'cancel' %}">
+                {% csrf_token %}
+                <button class="btn btn-outline-danger btn-sm" type="submit">
+                  Cancel
+                </button>
+              </form>
+            {% else %}
+              {{ payment_request.get_status_display }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">You have not asked anyone for money.</p>
+{% endif %}
+{% endblock content %}
