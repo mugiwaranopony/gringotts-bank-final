@@ -20,7 +20,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 12,
         "image_filename": "rewards/images/three-broomsticks.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "honeydukes-sweet-box",
@@ -32,7 +31,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 6,
         "image_filename": "rewards/images/honeydukes.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "nimbus-2000",
@@ -44,7 +42,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 50,
         "image_filename": "rewards/images/nimbus-2000.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "deluxe-joke-box",
@@ -56,8 +53,7 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 10,
         "image_filename": "rewards/images/weasleys-wizard-wheezes.jpg",
-        "image_alt": "",
-    },
+        },
     {
         "product_id": "wizarding-book-collection",
         "partner": "Flourish and Blotts",
@@ -67,7 +63,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 9,
         "image_filename": "rewards/images/flourish-and-blotts.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "premium-wizard-robes",
@@ -78,7 +73,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 18,
         "image_filename": "rewards/images/madam-malkins.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "premium-wand-care-package",
@@ -89,7 +83,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 8,
         "image_filename": "rewards/images/ollivanders.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "magical-pet-care-package",
@@ -100,7 +93,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 11,
         "image_filename": "rewards/images/magical-menagerie.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "one-night-stay",
@@ -112,7 +104,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 20,
         "image_filename": "rewards/images/leaky-cauldron.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "premium-owl-care-kit",
@@ -123,7 +114,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 7,
         "image_filename": "rewards/images/eylops-owl-emporium.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "mystery-magical-curio",
@@ -134,7 +124,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 25,
         "image_filename": "rewards/images/borgin-and-burkes.jpg",
-        "image_alt": "",
     },
     {
         "product_id": "first-class-journey-package",
@@ -146,7 +135,6 @@ REWARD_PRODUCTS = (
         ),
         "galleon_price": 15,
         "image_filename": "rewards/images/hogwarts-express.jpg",
-        "image_alt": "",
     },
 )
 
