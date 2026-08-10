@@ -13,7 +13,7 @@
 <div class="card balance-card my-4">
   <div class="card-body text-center py-4">
     <h5 class="card-title">Your Balance</h5>
-    <p class="display-3 mb-0">${{ account.balance }}</p>
+    <p class="display-3 mb-0">${{ account.balance|floatformat:"2g" }}</p>
   </div>
 </div>
 
@@ -107,7 +107,7 @@
           <td>{{ transaction.get_transaction_type_display }}</td>
           <td>{{ transaction.description }}</td>
           <td class="text-end {% if transaction.is_credit %}text-success{% else %}text-danger{% endif %}">
-            {% if transaction.is_credit %}+{% else %}−{% endif %}${{ transaction.amount }}
+            {% if transaction.is_credit %}+{% else %}−{% endif %}${{ transaction.amount|floatformat:"2g" }}
           </td>
         </tr>
       {% endfor %}

@@ -238,7 +238,7 @@ class MonthlySpendingDashboardTests(TestCase):
 
         response = self.get_dashboard()
 
-        self.assertContains(response, "$12,345.67", count=2)
+        self.assertContains(response, "$12,345.67", count=3)
 
     def test_non_positive_ledger_rows_are_not_counted_as_spending(self):
         self.add_entry(Transaction.WITHDRAW, "0.00")
