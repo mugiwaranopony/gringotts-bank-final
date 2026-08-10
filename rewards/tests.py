@@ -58,19 +58,19 @@ class RewardsPageTests(TestCase):
 
         self.assertEqual(GALLEON_TO_USD_RATE, Decimal("5.00"))
         for product in response.context["products"]:
-            with self.subTest(product=product["slug"]):
+            with self.subTest(product=product["product_id"]):
                 self.assertEqual(
                     product["usd_price"],
                     Decimal(product["galleon_price"]) * GALLEON_TO_USD_RATE,
                 )
 
     def test_catalogue_contains_the_requested_products(self):
-        products_by_slug = {product["slug"]: product for product in REWARD_PRODUCTS}
+        products_by_id = {product["product_id"]: product for product in REWARD_PRODUCTS}
 
-        self.assertEqual(products_by_slug["dinner-for-two"]["galleon_price"], 12)
-        self.assertEqual(products_by_slug["nimbus-2000"]["galleon_price"], 50)
+        self.assertEqual(products_by_id["dinner-for-two"]["galleon_price"], 12)
+        self.assertEqual(products_by_id["nimbus-2000"]["galleon_price"], 50)
         self.assertEqual(
-            products_by_slug["first-class-journey-package"]["galleon_price"],
+            products_by_id["first-class-journey-package"]["galleon_price"],
             15,
         )
 
@@ -90,7 +90,7 @@ class RewardsPageTests(TestCase):
             "first-class-journey-package": "rewards/images/hogwarts-express.jpg",
         }
         actual_images = {
-            product["slug"]: product["image_filename"]
+            product["product_id"]: product["image_filename"]
             for product in REWARD_PRODUCTS
         }
 
@@ -122,15 +122,15 @@ class RewardsPageTests(TestCase):
         with mock.patch("rewards.views.finders.find", side_effect=find_image):
             response = self.client.get(reverse("rewards"))
 
-        products_by_slug = {
-            product["slug"]: product for product in response.context["products"]
+        products_by_id = {
+            product["product_id"]: product for product in response.context["products"]
         }
         self.assertEqual(
-            products_by_slug["nimbus-2000"]["image"],
+            products_by_id["nimbus-2000"]["image"],
             "rewards/images/nimbus-2000.jpg",
         )
         self.assertEqual(
-            products_by_slug["dinner-for-two"]["image"],
+            products_by_id["dinner-for-two"]["image"],
             REWARD_IMAGE_PLACEHOLDER,
         )
 

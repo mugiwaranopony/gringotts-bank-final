@@ -185,7 +185,7 @@
             {% if account %}
               <form class="rewards-purchase-form"
                     method="post"
-                    action="{% url 'purchase_reward' product.slug %}">
+                    action="{% url 'purchase_reward' product.product_id %}">
                 {% csrf_token %}
                 <button class="btn rewards-confirm-button" type="submit">
                   Confirm Purchase

@@ -14,7 +14,7 @@ REWARD_IMAGE_PLACEHOLDER = "rewards/images/placeholder.svg"
 
 REWARD_PRODUCTS = (
     {
-        "slug": "dinner-for-two",
+        "product_id": "dinner-for-two",
         "partner": "Three Broomsticks",
         "name": "Dinner for Two",
         "description": (
@@ -25,7 +25,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "honeydukes-sweet-box",
+        "product_id": "honeydukes-sweet-box",
         "partner": "Honeydukes",
         "name": "Honeydukes Sweet Box",
         "description": (
@@ -37,7 +37,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "nimbus-2000",
+        "product_id": "nimbus-2000",
         "partner": "Quality Quidditch Supplies",
         "name": "Nimbus 2000",
         "description": (
@@ -49,7 +49,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "deluxe-joke-box",
+        "product_id": "deluxe-joke-box",
         "partner": "Weasleys' Wizard Wheezes",
         "name": "Deluxe Joke Box",
         "description": (
@@ -61,7 +61,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "wizarding-book-collection",
+        "product_id": "wizarding-book-collection",
         "partner": "Flourish and Blotts",
         "name": "Wizarding Book Collection",
         "description": (
@@ -72,7 +72,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "premium-wizard-robes",
+        "product_id": "premium-wizard-robes",
         "partner": "Madam Malkin's Robes for All Occasions",
         "name": "Premium Wizard Robes",
         "description": (
@@ -83,7 +83,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "premium-wand-care-package",
+        "product_id": "premium-wand-care-package",
         "partner": "Ollivanders",
         "name": "Premium Wand Care Package",
         "description": (
@@ -94,7 +94,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "magical-pet-care-package",
+        "product_id": "magical-pet-care-package",
         "partner": "Magical Menagerie",
         "name": "Magical Pet Care Package",
         "description": (
@@ -105,7 +105,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "one-night-stay",
+        "product_id": "one-night-stay",
         "partner": "The Leaky Cauldron",
         "name": "One-Night Stay",
         "description": (
@@ -117,7 +117,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "premium-owl-care-kit",
+        "product_id": "premium-owl-care-kit",
         "partner": "Eeylops Owl Emporium",
         "name": "Premium Owl Care Kit",
         "description": (
@@ -128,7 +128,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "mystery-magical-curio",
+        "product_id": "mystery-magical-curio",
         "partner": "Borgin and Burkes",
         "name": "Mystery Magical Curio",
         "description": (
@@ -139,7 +139,7 @@ REWARD_PRODUCTS = (
         "image_alt": "",
     },
     {
-        "slug": "first-class-journey-package",
+        "product_id": "first-class-journey-package",
         "partner": "Hogwarts Express",
         "name": "First-Class Journey Package",
         "description": (
@@ -152,15 +152,18 @@ REWARD_PRODUCTS = (
     },
 )
 
-PRODUCTS_BY_SLUG = {product["slug"]: product for product in REWARD_PRODUCTS}
+PRODUCTS_BY_ID = {
+    product["product_id"]:
+        product for product in REWARD_PRODUCTS
+}
 
 
 def galleons_to_usd(galleons):
     return Decimal(galleons) * GALLEON_TO_USD_RATE
 
 
-def _get_product(slug):
-    product = PRODUCTS_BY_SLUG.get(slug)
+def _get_product(product_id):
+    product = PRODUCTS_BY_ID.get(product_id)
     if product is None:
         raise Http404("No such Gringotts Privileges product.")
     return product
@@ -198,8 +201,8 @@ def rewards_page(request):
 
 @login_required
 @require_POST
-def purchase_reward(request, slug):
-    product = _get_product(slug)
+def purchase_reward(request, product_id):
+    product = _get_product(product_id)
     usd_price = galleons_to_usd(product["galleon_price"])
     account = get_or_create_account(request.user)
     description = (
