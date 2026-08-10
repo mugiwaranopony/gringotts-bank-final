@@ -1,6 +1,5 @@
 from decimal import Decimal
 from unittest import mock
-
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -15,7 +14,6 @@ from banking.models import (
 
 from .views import (
     GALLEON_TO_USD_RATE,
-    REWARD_IMAGE_PLACEHOLDER,
     REWARD_PRODUCTS,
     galleons_to_usd,
 )
@@ -95,44 +93,6 @@ class RewardsPageTests(TestCase):
         }
 
         self.assertEqual(actual_images, expected_images)
-
-    def test_missing_product_images_use_the_local_placeholder(self):
-        with mock.patch("rewards.views.finders.find", return_value=None):
-            response = self.client.get(reverse("rewards"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(
-            all(
-                product["image"] == REWARD_IMAGE_PLACEHOLDER
-                for product in response.context["products"]
-            )
-        )
-        self.assertContains(
-            response,
-            "/static/rewards/images/placeholder.svg",
-            count=12,
-        )
-
-    def test_available_product_image_replaces_the_placeholder(self):
-        def find_image(path):
-            if path.endswith("nimbus-2000.jpg"):
-                return path
-            return None
-
-        with mock.patch("rewards.views.finders.find", side_effect=find_image):
-            response = self.client.get(reverse("rewards"))
-
-        products_by_id = {
-            product["product_id"]: product for product in response.context["products"]
-        }
-        self.assertEqual(
-            products_by_id["nimbus-2000"]["image"],
-            "rewards/images/nimbus-2000.jpg",
-        )
-        self.assertEqual(
-            products_by_id["dinner-for-two"]["image"],
-            REWARD_IMAGE_PLACEHOLDER,
-        )
 
 
 class RewardPurchaseTests(TestCase):

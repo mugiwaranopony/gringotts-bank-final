@@ -2,7 +2,6 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.staticfiles import finders
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
@@ -10,7 +9,6 @@ from django.views.decorators.http import require_POST
 from banking.models import InsufficientFunds, get_or_create_account, withdraw_money
 
 GALLEON_TO_USD_RATE = Decimal("5.00")
-REWARD_IMAGE_PLACEHOLDER = "rewards/images/placeholder.svg"
 
 REWARD_PRODUCTS = (
     {
@@ -177,11 +175,8 @@ def rewards_page(request):
     products = []
     for catalogue_product in REWARD_PRODUCTS:
         product = catalogue_product.copy()
-        product["image"] = (
-            product["image_filename"]
-            if finders.find(product["image_filename"])
-            else REWARD_IMAGE_PLACEHOLDER
-        )
+        product["image"] = product["image_filename"]
+        
         product["usd_price"] = galleons_to_usd(product["galleon_price"])
         if account is not None:
             product["can_afford"] = account.balance >= product["usd_price"]
