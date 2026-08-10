@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load static crispy_forms_tags l10n %}
+
+{% block title %}Gringotts Loans — Gringotts Bank{% endblock title %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'loans/css/loans.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="loans-page pb-5">
+  <header class="loans-hero mb-4">
+    <p class="loans-eyebrow">Gringotts Lending Office</p>
+    <h1>Gringotts Loans</h1>
+    <p class="loans-hero__subtitle">Wizarding Loans &amp; Financing</p>
+    <p class="loans-hero__copy mb-0">
+      Apply for financing through Gringotts Bank. Applications are reviewed
+      with the seriousness they deserve—and occasionally additional parchment.
+    </p>
+  </header>
+
+  <div class="row g-4 align-items-start">
+    <div class="col-lg-8">
+      <section class="loans-panel" aria-labelledby="loan-application-title">
+        <div class="loans-panel__header">
+          <p class="loans-panel__kicker">Confidential customer document</p>
+          <h2 class="h3 mb-1" id="loan-application-title">Loan Application</h2>
+          <p class="text-body-secondary mb-0">
+            Complete every section before submitting your application for
+            goblin review.
+          </p>
+        </div>
+
+        <form method="post" class="loans-form">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+              <strong>Please review the marked fields.</strong>
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <fieldset class="loans-form-section">
+            <legend class="loans-form-section__legend">
+              <span class="loans-form-section__number" aria-hidden="true">01</span>
+              <span>
+                <span class="loans-form-section__title">Loan Details</span>
+                <span class="loans-form-section__copy">
+                  Tell us what you need and when you intend to return it.
+                </span>
+              </span>
+            </legend>
+            <div class="row g-3">
+              <div class="col-md-6">
+                {{ form.requested_amount|as_crispy_field }}
+              </div>
+              <div class="col-md-6">
+                {{ form.repayment_term|as_crispy_field }}
+              </div>
+              <div class="col-12">
+                {{ form.purpose|as_crispy_field }}
+              </div>
+            </div>
+
+            <aside class="loans-rate-box mt-2" aria-labelledby="lending-rates-title">
+              <div>
+                <p class="loans-panel__kicker mb-1">Current fixed terms</p>
+                <h3 class="h5 mb-1" id="lending-rates-title">
+                  Gringotts Lending Rates
+                </h3>
+                <p class="small text-body-secondary mb-0">
+                  Simple fixed interest; final figures are calculated by
+                  Gringotts on the server.
+                </p>
+              </div>
+              <dl class="loans-rate-list mb-0">
+                {% for rate in lending_rates %}
+                  <div class="loans-rate-list__item"
+                       data-loan-rate
+                       data-term="{{ rate.term }}"
+                       data-rate="{{ rate.rate_percent|unlocalize }}">
+                    <dt>{{ rate.term_label }}</dt>
+                    <dd>{{ rate.rate_percent|floatformat:"0" }}%</dd>
+                  </div>
+                {% endfor %}
+              </dl>
+              <div class="loans-estimate" aria-live="polite">
+                <span>Estimated total repayment</span>
+                <output id="loan-repayment-estimate">
+                  Enter an amount and select a term
+                </output>
+                <small>Display estimate only; no preview value is submitted.</small>
+              </div>
+            </aside>
+          </fieldset>
+
+          <fieldset class="loans-form-section">
+            <legend class="loans-form-section__legend">
+              <span class="loans-form-section__number" aria-hidden="true">02</span>
+              <span>
+                <span class="loans-form-section__title">Financial Information</span>
+                <span class="loans-form-section__copy">
+                  Ordinary financial details, for the moment.
+                </span>
+              </span>
+            </legend>
+            <div class="row g-3">
+              <div class="col-md-6">
+                {{ form.employment|as_crispy_field }}
+              </div>
+              <div class="col-md-6">
+                {{ form.monthly_income|as_crispy_field }}
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="loans-form-section">
+            <legend class="loans-form-section__legend">
+              <span class="loans-form-section__number" aria-hidden="true">03</span>
+              <span>
+                <span class="loans-form-section__title">
+                  Gringotts Risk Questionnaire
+                </span>
+                <span class="loans-form-section__copy">
+                  Standard due diligence under Goblin Banking Ordinance 42.
+                </span>
+              </span>
+            </legend>
+            <div class="row g-3">
+              <div class="col-md-6">
+                {{ form.previous_default|as_crispy_field }}
+              </div>
+              <div class="col-md-6">
+                {{ form.owes_goblins|as_crispy_field }}
+              </div>
+              <div class="col-md-6">
+                {{ form.dragons_on_property|as_crispy_field }}
+              </div>
+              <div class="col-md-6">
+                {{ form.unauthorized_vault_entry|as_crispy_field }}
+              </div>
+              <div class="col-md-6">
+                {{ form.financial_decision_rating|as_crispy_field }}
+              </div>
+              <div class="col-md-6">
+                {{ form.income_loss_repayment|as_crispy_field }}
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="loans-form-section loans-form-section--last">
+            <legend class="loans-form-section__legend">
+              <span class="loans-form-section__number" aria-hidden="true">04</span>
+              <span>
+                <span class="loans-form-section__title">Collateral Declaration</span>
+                <span class="loans-form-section__copy">
+                  Please select one entirely non-binding declaration.
+                </span>
+              </span>
+            </legend>
+            {{ form.collateral|as_crispy_field }}
+            <div class="alert alert-warning loans-legal-warning d-none mt-2 mb-0"
+                 id="first-born-warning"
+                 role="status">
+              <strong>Gringotts Legal Department:</strong>
+              Please disregard that option. It was included in a form last
+              revised in 1473.
+            </div>
+          </fieldset>
+
+          <div class="d-grid d-sm-flex align-items-center gap-3 mt-4">
+            <button class="btn loans-submit-button" type="submit">
+              Submit Application
+            </button>
+            <span class="small text-body-secondary">
+              Submission does not guarantee approval or release any funds.
+            </span>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div class="col-lg-4">
+      <aside class="loans-review-panel" aria-labelledby="review-charter-title">
+        <p class="loans-panel__kicker">Official review charter</p>
+        <h2 class="h4" id="review-charter-title">The Goblin Review Process</h2>
+        <ol class="loans-review-list">
+          <li>Your application is recorded as <strong>Pending</strong>.</li>
+          <li>An administrator reviews the submitted information.</li>
+          <li>Your status may become Approved or Rejected.</li>
+        </ol>
+        <p class="loans-review-note mb-0">
+          Preliminary assessments are ceremonial only. They never determine
+          eligibility, approval, or the movement of funds.
+        </p>
+      </aside>
+    </div>
+  </div>
+
+  <section class="loans-history mt-5" aria-labelledby="loan-history-title">
+    <div class="loans-history__header">
+      <div>
+        <p class="loans-panel__kicker">Private customer record</p>
+        <h2 class="h3 mb-0" id="loan-history-title">My Loan Applications</h2>
+      </div>
+      <span class="loans-history__count">
+        {{ applications|length }} application{{ applications|length|pluralize }}
+      </span>
+    </div>
+
+    {% if applications %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 loans-history__table">
+          <caption class="visually-hidden">
+            Loan applications submitted by {{ user.username }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Submitted</th>
+              <th scope="col">Requested Amount</th>
+              <th scope="col">Term</th>
+              <th scope="col">Purpose</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for application in applications %}
+              <tr>
+                <td class="text-nowrap">
+                  {{ application.created_at|date:'M d, Y' }}
+                </td>
+                <td class="fw-semibold text-nowrap">
+                  ${{ application.requested_amount|floatformat:"2g" }}
+                </td>
+                <td class="text-nowrap">
+                  {{ application.get_repayment_term_display }}
+                </td>
+                <td>{{ application.purpose|truncatechars:90 }}</td>
+                <td>
+                  {% if application.is_fully_repaid %}
+                    <span class="badge rounded-pill text-bg-success">
+                      Repaid
+                    </span>
+                  {% elif application.is_active %}
+                    <span class="badge rounded-pill loans-status-active">
+                      Active
+                    </span>
+                  {% elif application.status == 'APPROVED' %}
+                    <span class="badge rounded-pill text-bg-primary">
+                      Approved — Awaiting Funding
+                    </span>
+                  {% elif application.status == 'REJECTED' %}
+                    <span class="badge rounded-pill text-bg-danger">Rejected</span>
+                  {% else %}
+                    <span class="badge rounded-pill text-bg-warning">Pending</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% if application.is_disbursed %}
+                <tr class="loans-loan-details-row">
+                  <td colspan="5">
+                    <section class="loans-loan-details"
+                             aria-labelledby="loan-details-{{ application.pk }}">
+                      <div class="loans-loan-details__header">
+                        <div>
+                          <p class="loans-panel__kicker mb-1">
+                            Gringotts Loan #{{ application.pk }}
+                          </p>
+                          <h3 class="h5 mb-0"
+                              id="loan-details-{{ application.pk }}">
+                            {% if application.is_fully_repaid %}
+                              Paid in Full
+                            {% else %}
+                              Active Loan Details
+                            {% endif %}
+                          </h3>
+                        </div>
+                        <span class="small text-body-secondary">
+                          Funded {{ application.disbursed_at|date:'M d, Y' }}
+                        </span>
+                      </div>
+
+                      <dl class="loans-loan-metrics">
+                        <div>
+                          <dt>Principal</dt>
+                          <dd>${{ application.requested_amount|floatformat:"2g" }}</dd>
+                        </div>
+                        <div>
+                          <dt>Term</dt>
+                          <dd>{{ application.get_repayment_term_display }}</dd>
+                        </div>
+                        <div>
+                          <dt>Interest</dt>
+                          <dd>{{ application.interest_rate_percent|floatformat:"0" }}%</dd>
+                        </div>
+                        <div>
+                          <dt>Total repayment</dt>
+                          <dd>${{ application.total_repayment|floatformat:"2g" }}</dd>
+                        </div>
+                        <div>
+                          <dt>Amount repaid</dt>
+                          <dd>${{ application.amount_repaid|floatformat:"2g" }}</dd>
+                        </div>
+                        <div>
+                          <dt>Remaining</dt>
+                          <dd>${{ application.remaining_balance|floatformat:"2g" }}</dd>
+                        </div>
+                      </dl>
+
+                      {% if application.is_active %}
+                        <form class="loans-repayment-form"
+                              method="post"
+                              action="{% url 'repay_loan' application.pk %}">
+                          {% csrf_token %}
+                          <div class="loans-repayment-field">
+                            <label class="form-label fw-semibold"
+                                   for="repayment-amount-{{ application.pk }}">
+                              Repayment amount ($)
+                            </label>
+                            <input class="form-control"
+                                   id="repayment-amount-{{ application.pk }}"
+                                   name="amount"
+                                   type="number"
+                                   inputmode="decimal"
+                                   min="0.01"
+                                   step="0.01"
+                                   max="{{ application.remaining_balance|unlocalize }}"
+                                   aria-describedby="repayment-help-{{ application.pk }}"
+                                   required>
+                            <small class="form-text"
+                                   id="repayment-help-{{ application.pk }}">
+                              Maximum remaining repayment:
+                              ${{ application.remaining_balance|floatformat:"2g" }}.
+                            </small>
+                          </div>
+                          <button class="btn loans-repayment-button"
+                                  type="submit"
+                                  aria-label="Make payment toward Loan #{{ application.pk }}">
+                            Make Payment
+                          </button>
+                        </form>
+                      {% else %}
+                        <p class="loans-paid-note mb-0">
+                          <strong>Paid in full.</strong>
+                          No further repayments are accepted for this loan.
+                        </p>
+                      {% endif %}
+                    </section>
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="loans-history__empty">
+        <h3 class="h5">No applications yet</h3>
+        <p class="mb-0">
+          Your submitted loan applications will appear here for private review.
+        </p>
+      </div>
+    {% endif %}
+  </section>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const collateralField = document.getElementById("id_collateral");
+    const legalWarning = document.getElementById("first-born-warning");
+
+    if (collateralField && legalWarning) {
+      function updateLegalWarning() {
+        legalWarning.classList.toggle(
+          "d-none",
+          collateralField.value !== "FIRST_BORN"
+        );
+      }
+
+      collateralField.addEventListener("change", updateLegalWarning);
+      updateLegalWarning();
+    }
+
+    const amountField = document.getElementById("id_requested_amount");
+    const termField = document.getElementById("id_repayment_term");
+    const estimateOutput = document.getElementById("loan-repayment-estimate");
+    const rateElements = document.querySelectorAll("[data-loan-rate]");
+
+    if (amountField && termField && estimateOutput && rateElements.length) {
+      const rates = {};
+      rateElements.forEach(function (element) {
+        rates[element.dataset.term] = Number(element.dataset.rate);
+      });
+      const currency = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD"
+      });
+
+      function updateRepaymentEstimate() {
+        const principal = Number(amountField.value);
+        const rate = rates[termField.value];
+        if (!Number.isFinite(principal) || principal <= 0 || rate === undefined) {
+          estimateOutput.textContent = "Enter an amount and select a term";
+          return;
+        }
+
+        estimateOutput.textContent = currency.format(
+          principal * (1 + rate / 100)
+        );
+      }
+
+      amountField.addEventListener("input", updateRepaymentEstimate);
+      termField.addEventListener("change", updateRepaymentEstimate);
+      updateRepaymentEstimate();
+    }
+  });
+</script>
+{% endblock content %}

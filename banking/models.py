@@ -164,7 +164,7 @@ def _lock(pk):
     return Account.objects.select_for_update().get(pk=pk)
 
 
-def deposit_money(account, amount):
+def deposit_money(account, amount, description=""):
     """Add money to an account and record it in the ledger."""
     with transaction.atomic():
         account = _lock(account.pk)
@@ -174,11 +174,12 @@ def deposit_money(account, amount):
             account=account,
             transaction_type=Transaction.DEPOSIT,
             amount=amount,
+            description=description,
         )
 
 
-def withdraw_money(account, amount):
-    """Take money out of an account, or raise InsufficientFunds."""
+def withdraw_money(account, amount, description=""):
+    """Take money out of an account and record why, or raise InsufficientFunds."""
     with transaction.atomic():
         account = _lock(account.pk)
         if amount > account.balance:
@@ -189,6 +190,7 @@ def withdraw_money(account, amount):
             account=account,
             transaction_type=Transaction.WITHDRAW,
             amount=amount,
+            description=description,
         )
 
 

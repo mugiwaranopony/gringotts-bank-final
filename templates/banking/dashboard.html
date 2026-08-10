@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Dashboard — Gringotts Bank{% endblock title %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'banking/css/dashboard.css' %}">
+{% endblock extra_css %}
 
 {% block content %}
 <h1>Hello, {{ user.username }}! 👋</h1>
@@ -25,6 +30,64 @@
     waiting. <a href="{% url 'payment_requests' %}">Take a look →</a>
   </div>
 {% endif %}
+
+<section class="card dashboard-spending-card mb-4"
+         aria-labelledby="monthly-spending-title">
+  <div class="card-body p-4">
+    <div class="dashboard-spending-heading mb-4">
+      <div>
+        <p class="dashboard-spending-eyebrow mb-1">Vault overview</p>
+        <h2 class="h4 mb-0" id="monthly-spending-title">Monthly Spending</h2>
+      </div>
+      <p class="text-body-secondary mb-0">
+        {{ monthly_spending_month|date:"F Y" }}
+      </p>
+    </div>
+
+    {% if monthly_spending_breakdown %}
+      <div class="row g-4 align-items-center">
+        <div class="col-md-5 col-lg-4">
+          <div class="dashboard-spending-chart">
+            <canvas id="monthly-spending-chart"
+                    width="320"
+                    height="320"
+                    role="img"
+                    aria-label="Donut chart of monthly spending. Exact amounts are listed beside the chart.">
+            </canvas>
+          </div>
+        </div>
+        <div class="col-md-7 col-lg-8">
+          <p class="dashboard-spending-total-label mb-1">Total spent this month</p>
+          <p class="dashboard-spending-total mb-4">
+            ${{ monthly_spending_total|floatformat:"2g" }}
+          </p>
+
+          <dl class="dashboard-spending-breakdown mb-0"
+              id="monthly-spending-breakdown">
+            {% for category in monthly_spending_breakdown %}
+              <div class="dashboard-spending-breakdown-row">
+                <dt>
+                  <span class="dashboard-spending-swatch"
+                        style="--dashboard-spending-color: {{ category.color }};"
+                        aria-hidden="true"></span>
+                  {{ category.label }}
+                </dt>
+                <dd>${{ category.amount|floatformat:"2g" }}</dd>
+              </div>
+            {% endfor %}
+          </dl>
+        </div>
+      </div>
+    {% else %}
+      <div class="dashboard-spending-empty text-center">
+        <p class="fw-semibold mb-1">No spending this month.</p>
+        <p class="text-body-secondary mb-0">
+          Your vault has remained suspiciously undisturbed.
+        </p>
+      </div>
+    {% endif %}
+  </div>
+</section>
 
 <h2>Recent Transactions</h2>
 {% if recent_transactions %}
@@ -53,5 +116,59 @@
   <a href="{% url 'transaction_list' %}">See full history →</a>
 {% else %}
   <p>No transactions yet.</p>
+{% endif %}
+
+{% if monthly_spending_breakdown %}
+  {{ monthly_spending_chart_data|json_script:"monthly-spending-chart-data" }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script>
+    (() => {
+      const canvas = document.getElementById("monthly-spending-chart");
+      const dataElement = document.getElementById("monthly-spending-chart-data");
+
+      if (!canvas || !dataElement || typeof Chart === "undefined") {
+        return;
+      }
+
+      const chartData = JSON.parse(dataElement.textContent);
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+      const currencyFormatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      new Chart(canvas, {
+        type: "doughnut",
+        data: {
+          labels: chartData.labels,
+          datasets: [{
+            data: chartData.values.map(Number),
+            backgroundColor: chartData.colors,
+            borderColor: "#fffaf0",
+            borderWidth: 3,
+            hoverOffset: 4,
+          }],
+        },
+        options: {
+          animation: prefersReducedMotion ? false : { duration: 450 },
+          cutout: "68%",
+          maintainAspectRatio: false,
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label(context) {
+                  return `${context.label}: ${currencyFormatter.format(context.parsed)}`;
+                },
+              },
+            },
+          },
+        },
+      });
+    })();
+  </script>
 {% endif %}
 {% endblock content %}

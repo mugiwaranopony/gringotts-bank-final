@@ -1,15 +1,20 @@
 # banking/views.py
+from datetime import datetime, time
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .models import (
     AlreadyResolved,
     InsufficientFunds,
     PaymentRequest,
+    Transaction,
     accept_payment_request,
     cancel_payment_request,
     decline_payment_request,
@@ -22,10 +27,90 @@ from .models import (
 from .forms import DepositForm, RequestMoneyForm, TransferForm, WithdrawForm
 
 
+SPENDING_CATEGORY_COLORS = {
+    "Gringotts Privileges": "#b08a2e",
+    "Loan Repayments": "#236b56",
+    "Transfers": "#457b9d",
+    "Withdrawals": "#8a4b47",
+    "Other": "#66737a",
+}
+
+
+def _monthly_spending(account):
+    """Summarize this account's outgoing transactions for the current month."""
+    now = timezone.now()
+    current_date = timezone.localdate(now)
+    month_start = timezone.make_aware(
+        datetime.combine(current_date.replace(day=1), time.min),
+        timezone.get_current_timezone(),
+    )
+
+    outgoing_transactions = account.transactions.filter(
+        timestamp__gte=month_start,
+        timestamp__lte=now,
+        amount__gt=0,
+        transaction_type__in=(
+            Transaction.WITHDRAW,
+            Transaction.TRANSFER_OUT,
+        ),
+    ).only("transaction_type", "amount", "description")
+
+    category_totals = {
+        category: Decimal("0.00") for category in SPENDING_CATEGORY_COLORS
+    }
+
+    for entry in outgoing_transactions:
+        if (
+            entry.transaction_type == Transaction.WITHDRAW
+            and entry.description.startswith("Purchase — ")
+            and entry.description.endswith(" · Gringotts Privileges")
+        ):
+            category = "Gringotts Privileges"
+        elif (
+            entry.transaction_type == Transaction.WITHDRAW
+            and entry.description.startswith("Loan Repayment — Gringotts Loans | ")
+        ):
+            category = "Loan Repayments"
+        elif entry.transaction_type == Transaction.TRANSFER_OUT:
+            category = "Transfers"
+        elif entry.transaction_type == Transaction.WITHDRAW:
+            category = "Withdrawals"
+        else:
+            category = "Other"
+
+        category_totals[category] += entry.amount
+
+    total = sum(category_totals.values(), Decimal("0.00"))
+    breakdown = [
+        {
+            "label": category,
+            "amount": amount,
+            "color": SPENDING_CATEGORY_COLORS[category],
+        }
+        for category, amount in category_totals.items()
+        if amount > 0
+    ]
+    chart_data = {
+        "labels": [category["label"] for category in breakdown],
+        # Decimal strings preserve the exact ledger values until Chart.js
+        # converts them for display in the browser.
+        "values": [str(category["amount"]) for category in breakdown],
+        "colors": [category["color"] for category in breakdown],
+    }
+
+    return {
+        "monthly_spending_breakdown": breakdown,
+        "monthly_spending_chart_data": chart_data,
+        "monthly_spending_month": current_date,
+        "monthly_spending_total": total,
+    }
+
+
 @login_required
 def dashboard(request):
     account = get_or_create_account(request.user)
     recent_transactions = account.transactions.all()[:5]
+    spending_context = _monthly_spending(account)
     return render(
         request,
         "banking/dashboard.html",
@@ -35,6 +120,7 @@ def dashboard(request):
             "pending_requests": account.requests_received.filter(
                 status=PaymentRequest.PENDING
             ).count(),
+            **spending_context,
         },
     )
 

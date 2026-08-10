@@ -1,0 +1,115 @@
+.dashboard-spending-card {
+  --dashboard-spending-emerald: #174f3f;
+  --dashboard-spending-gold: #9a7724;
+  background: linear-gradient(135deg, #fffdf7 0%, #f8f1df 100%);
+  border: 1px solid rgba(154, 119, 36, 0.42);
+  border-top: 3px solid #1d3557;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.25rem rgba(29, 53, 87, 0.08);
+  overflow: hidden;
+}
+
+.dashboard-spending-heading {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.dashboard-spending-eyebrow {
+  color: #765b1c;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.dashboard-spending-chart {
+  aspect-ratio: 1;
+  margin-inline: auto;
+  max-width: 18rem;
+  position: relative;
+  width: 100%;
+}
+
+.dashboard-spending-total-label {
+  color: #56615d;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.dashboard-spending-total {
+  color: var(--dashboard-spending-emerald);
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.dashboard-spending-breakdown {
+  max-width: 38rem;
+}
+
+.dashboard-spending-breakdown-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(23, 79, 63, 0.14);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding-block: 0.65rem;
+}
+
+.dashboard-spending-breakdown-row:first-child {
+  padding-top: 0;
+}
+
+.dashboard-spending-breakdown-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.dashboard-spending-breakdown-row dt {
+  align-items: center;
+  display: flex;
+  font-weight: 600;
+  gap: 0.6rem;
+}
+
+.dashboard-spending-breakdown-row dd {
+  color: #243c35;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.dashboard-spending-swatch {
+  background: var(--dashboard-spending-color);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(29, 53, 87, 0.15);
+  flex: 0 0 0.75rem;
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.dashboard-spending-empty {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px dashed rgba(154, 119, 36, 0.55);
+  border-radius: 0.75rem;
+  padding: 2rem 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .dashboard-spending-card .card-body {
+    padding: 1.25rem !important;
+  }
+
+  .dashboard-spending-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .dashboard-spending-chart {
+    max-width: 14rem;
+  }
+}

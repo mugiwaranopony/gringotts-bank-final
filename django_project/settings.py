@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     "pages",
     "accounts",
     "banking",
+    "rewards",
+    "loans",
 ]
 
 MIDDLEWARE = [

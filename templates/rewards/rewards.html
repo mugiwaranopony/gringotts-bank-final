@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gringotts Privileges — Gringotts Bank{% endblock title %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'rewards/css/rewards.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="rewards-page pb-5">
+  <header class="rewards-hero mb-5">
+    <div class="rewards-hero__content">
+      <p class="rewards-eyebrow">&#10022; Gringotts Bank Privileges</p>
+      <h1>Gringotts Privileges</h1>
+      <p class="rewards-hero__subtitle">
+        An exclusive collection of wizarding goods and experiences, reserved
+        for Gringotts customers across the magical world.
+      </p>
+      <div class="rewards-hero__details">
+        <span class="rewards-detail-pill">
+          Exchange rate: 1 Galleon = ${{ exchange_rate|floatformat:"2g" }} USD
+        </span>
+        {% if account %}
+          <span class="rewards-detail-pill">
+            Available balance: ${{ account.balance|floatformat:"2g" }}
+          </span>
+        {% else %}
+          <span class="rewards-detail-pill">Sign in to view your balance</span>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <section aria-labelledby="rewards-catalogue-title">
+    <div class="rewards-section-heading mb-4">
+      <div>
+        <p class="rewards-section-kicker">Selected for Gringotts customers</p>
+        <h2 class="rewards-section-title h3" id="rewards-catalogue-title">
+          The Privileges Collection
+        </h2>
+      </div>
+      <span class="rewards-section-rule" aria-hidden="true"></span>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      {% for product in products %}
+        <div class="col-12 col-md-6 col-lg-4">
+          <article class="card rewards-card h-100">
+            <div class="rewards-card__media">
+              <img class="rewards-card__image"
+                   src="{% static product.image %}"
+                   alt="{{ product.image_alt }}"
+                   width="640"
+                   height="360"
+                   loading="lazy">
+              <span class="badge rewards-exclusive-badge">
+                Gringotts Exclusive
+              </span>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <p class="rewards-partner">{{ product.partner }}</p>
+              <h3 class="rewards-product-name">{{ product.name }}</h3>
+              <p class="rewards-description">{{ product.description }}</p>
+              <div class="mt-auto">
+                <div class="rewards-price-panel">
+                  <span class="rewards-galleon-price">
+                    {{ product.galleon_price }} Galleons
+                  </span>
+                  <span class="rewards-usd-price">
+                    Approximately ${{ product.usd_price|floatformat:"2g" }} USD
+                  </span>
+                </div>
+                <button class="btn rewards-purchase-button w-100"
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#purchase-modal-{{ product.slug }}"
+                        aria-haspopup="dialog"
+                        aria-label="Purchase {{ product.name }}">
+                  Purchase
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% for product in products %}
+    <div class="modal fade rewards-modal"
+         id="purchase-modal-{{ product.slug }}"
+         tabindex="-1"
+         aria-labelledby="purchase-modal-title-{{ product.slug }}"
+         aria-describedby="purchase-modal-description-{{ product.slug }}"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>
+              <p class="rewards-modal__eyebrow">Gringotts Privileges</p>
+              <h2 class="modal-title h4"
+                  id="purchase-modal-title-{{ product.slug }}">
+                Confirm Purchase
+              </h2>
+            </div>
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <dl class="rewards-summary">
+              <div class="rewards-summary__row">
+                <dt>Product</dt>
+                <dd>{{ product.name }}</dd>
+              </div>
+              <div class="rewards-summary__row">
+                <dt>Partner</dt>
+                <dd>{{ product.partner }}</dd>
+              </div>
+              <div class="rewards-summary__row">
+                <dt>Price</dt>
+                <dd>{{ product.galleon_price }} Galleons</dd>
+              </div>
+              <div class="rewards-summary__row">
+                <dt>Exchange rate</dt>
+                <dd>1 Galleon = ${{ exchange_rate|floatformat:"2g" }}</dd>
+              </div>
+              <div class="rewards-summary__row">
+                <dt>Amount to convert</dt>
+                <dd>${{ product.usd_price|floatformat:"2g" }}</dd>
+              </div>
+              {% if account %}
+                <div class="rewards-summary__row">
+                  <dt>Current account balance</dt>
+                  <dd>${{ account.balance|floatformat:"2g" }}</dd>
+                </div>
+                <div class="rewards-summary__row">
+                  <dt>Balance after purchase</dt>
+                  <dd>
+                    {% if product.can_afford %}
+                      ${{ product.balance_after|floatformat:"2g" }}
+                    {% else %}
+                      <span class="text-danger">Insufficient balance</span>
+                    {% endif %}
+                  </dd>
+                </div>
+              {% endif %}
+            </dl>
+
+            {% if account %}
+              <p class="rewards-conversion-note"
+                 id="purchase-modal-description-{{ product.slug }}">
+                To complete this purchase,
+                <strong>${{ product.usd_price|floatformat:"2g" }}</strong> will be
+                converted from your Gringotts balance into
+                <strong>{{ product.galleon_price }} Galleons</strong>.
+              </p>
+              <p class="small text-body-secondary mb-0">
+                Your balance and the product price will be verified again
+                securely when you confirm.
+              </p>
+              {% if not product.can_afford %}
+                <div class="alert alert-warning mt-3 mb-0" role="alert">
+                  Your current balance is below the required amount. Gringotts
+                  will reject the purchase unless sufficient funds are available.
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="alert alert-light border mb-0"
+                   id="purchase-modal-description-{{ product.slug }}"
+                   role="alert">
+                Please sign in to view your current balance and complete this
+                purchase securely.
+              </div>
+            {% endif %}
+          </div>
+          <div class="modal-footer">
+            <button type="button"
+                    class="btn btn-outline-secondary"
+                    data-bs-dismiss="modal">
+              Cancel
+            </button>
+            {% if account %}
+              <form class="rewards-purchase-form"
+                    method="post"
+                    action="{% url 'purchase_reward' product.slug %}">
+                {% csrf_token %}
+                <button class="btn rewards-confirm-button" type="submit">
+                  Confirm Purchase
+                </button>
+              </form>
+            {% else %}
+              <a class="btn rewards-confirm-button"
+                 href="{% url 'login' %}?next={% url 'rewards' %}">
+                Log In to Purchase
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock content %}
